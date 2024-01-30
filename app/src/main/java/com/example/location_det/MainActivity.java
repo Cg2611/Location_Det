@@ -14,21 +14,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private FusedLocationProviderClient fusedLocationClient;
-    private LocationCallback locationCallback1;
-    private LocationCallback locationCallback2;
     private TextView latitudeTextView1;
     private TextView longitudeTextView1;
     private TextView latitudeTextView2;
     private TextView longitudeTextView2;
+    private TextView distanceTextView;
+    private double lat1, lon1, lat2, lon2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +37,46 @@ public class MainActivity extends AppCompatActivity {
         longitudeTextView1 = findViewById(R.id.longitudeTextView1);
         latitudeTextView2 = findViewById(R.id.latitudeTextView2);
         longitudeTextView2 = findViewById(R.id.longitudeTextView2);
+        distanceTextView = findViewById(R.id.distanceTextView);
 
         if (checkLocationPermission()) {
             // Permission already granted, proceed to get location
-            // getLocation1();  // Commented to avoid automatic location updates on app start
+            getLastKnownLocation();
         } else {
             // Request permission
             requestLocationPermission();
         }
+    }
+
+    private void getLastKnownLocation() {
+        if (checkLocationPermission()) {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            updateLocationTextViews1(location.getLatitude(), location.getLongitude());
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        double lat1Rad = Math.toRadians(lat1);
+        double lon1Rad = Math.toRadians(lon1);
+        double lat2Rad = Math.toRadians(lat2);
+        double lon2Rad = Math.toRadians(lon2);
+
+        double dlon = lon2Rad - lon1Rad;
+        double dlat = lat2Rad - lat1Rad;
+        double a = Math.sin(dlat / 2) * Math.sin(dlat / 2) +
+                Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                        Math.sin(dlon / 2) * Math.sin(dlon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double R = 6371;
+
+        return R * c;
     }
 
     private boolean checkLocationPermission() {
@@ -63,32 +92,20 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private void getLocation1() {
+    public void onGetLocationClick1(View view) {
+        getLastKnownLocation();
+    }
+
+    public void onGetLocationClick2(View view) {
         if (checkLocationPermission()) {
-            LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-            locationCallback1 = new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    if (locationResult == null) {
-                        return;
-                    }
-
-                    Location location = locationResult.getLastLocation();
-                    if (location != null) {
-                        double latitude = location.getLatitude();
-                        double longitude = location.getLongitude();
-
-                        // Update the TextViews with the new latitude and longitude
-                        updateLocationTextViews1(latitude, longitude);
-                    }
-                }
-            };
-
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback1, null);
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            updateLocationTextViews2(location.getLatitude(), location.getLongitude());
+                            calculateAndDisplayDistance();
+                        }
+                    });
         } else {
-            // Permission not granted, handle accordingly (e.g., show a message)
             Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
         }
     }
@@ -96,61 +113,23 @@ public class MainActivity extends AppCompatActivity {
     private void updateLocationTextViews1(double latitude, double longitude) {
         latitudeTextView1.setText("Latitude: " + latitude);
         longitudeTextView1.setText("Longitude: " + longitude);
-    }
 
-    public void onGetLocationClick1(View view) {
-        getLocation1();
-    }
-
-    private void getLocation2() {
-        if (checkLocationPermission()) {
-            LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-            locationCallback2 = new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    if (locationResult == null) {
-                        return;
-                    }
-
-                    Location location = locationResult.getLastLocation();
-                    if (location != null) {
-                        double latitude = location.getLatitude();
-                        double longitude = location.getLongitude();
-
-                        // Update the TextViews with the new latitude and longitude
-                        updateLocationTextViews2(latitude, longitude);
-                    }
-                }
-            };
-
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback2, null);
-        } else {
-            // Permission not granted, handle accordingly (e.g., show a message)
-            Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
-        }
+        lat1 = latitude;
+        lon1 = longitude;
     }
 
     private void updateLocationTextViews2(double latitude, double longitude) {
         latitudeTextView2.setText("Latitude: " + latitude);
         longitudeTextView2.setText("Longitude: " + longitude);
+
+        lat2 = latitude;
+        lon2 = longitude;
     }
 
-    public void onGetLocationClick2(View view) {
-        getLocation2();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (fusedLocationClient != null) {
-            if (locationCallback1 != null) {
-                fusedLocationClient.removeLocationUpdates(locationCallback1);
-            }
-            if (locationCallback2 != null) {
-                fusedLocationClient.removeLocationUpdates(locationCallback2);
-            }
+    private void calculateAndDisplayDistance() {
+        if (lat1 != 0 && lon1 != 0 && lat2 != 0 && lon2 != 0) {
+            double distance = calculateDistance(lat1, lon1, lat2, lon2);
+            distanceTextView.setText("Distance: " + distance + " km");
         }
     }
 
@@ -158,10 +137,8 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed to get location
-                // getLocation1();  // Commented to avoid automatic location updates on permission grant
+                getLastKnownLocation();  // Fetch location after permission is granted
             } else {
-                // Permission denied, handle accordingly (e.g., show a message)
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
             }
         }

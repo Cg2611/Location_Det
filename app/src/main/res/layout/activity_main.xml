@@ -5,58 +5,60 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/firstLocationLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/latitudeTextView1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="16dp">
+        android:text="Latitude: "
+        android:layout_marginTop="16dp"/>
 
-        <TextView
-            android:id="@+id/latitudeTextView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Latitude: " />
-
-        <TextView
-            android:id="@+id/longitudeTextView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Longitude: " />
-
-        <Button
-            android:id="@+id/getLocationButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Get Location"
-            android:onClick="onGetLocationClick1"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/secondLocationLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/longitudeTextView1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@id/firstLocationLayout"
-        android:layout_marginTop="16dp">
+        android:text="Longitude: "
+        android:layout_below="@id/latitudeTextView1"
+        android:layout_marginTop="8dp"/>
 
-        <TextView
-            android:id="@+id/latitudeTextView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Latitude: " />
+    <Button
+        android:id="@+id/getLocationButton1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/longitudeTextView1"
+        android:layout_marginTop="16dp"
+        android:onClick="onGetLocationClick1"
+        android:text="Get Location 1"/>
 
-        <TextView
-            android:id="@+id/longitudeTextView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Longitude: " />
+    <TextView
+        android:id="@+id/latitudeTextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Latitude: "
+        android:layout_below="@id/getLocationButton1"
+        android:layout_marginTop="16dp"/>
 
-        <Button
-            android:id="@+id/getLocationButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Get Location"
-            android:onClick="onGetLocationClick2"/>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/longitudeTextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Longitude: "
+        android:layout_below="@id/latitudeTextView2"
+        android:layout_marginTop="8dp"/>
+
+    <Button
+        android:id="@+id/getLocationButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/longitudeTextView2"
+        android:layout_marginTop="16dp"
+        android:onClick="onGetLocationClick2"
+        android:text="Get Location 2"/>
+
+    <TextView
+        android:id="@+id/distanceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distance: "
+        android:layout_below="@id/getLocationButton2"
+        android:layout_marginTop="16dp"/>
 </RelativeLayout>
