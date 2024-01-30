@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView latitudeTextView2;
     private TextView longitudeTextView2;
     private TextView distanceTextView;
+    private TextView aflTextView; // New TextView for AFL
     private double lat1, lon1, lat2, lon2;
 
     @Override
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         latitudeTextView2 = findViewById(R.id.latitudeTextView2);
         longitudeTextView2 = findViewById(R.id.longitudeTextView2);
         distanceTextView = findViewById(R.id.distanceTextView);
+        aflTextView = findViewById(R.id.aflTextView); // Initialize aflTextView
 
         if (checkLocationPermission()) {
             // Permission already granted, proceed to get location
@@ -77,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
         double R = 6371;
 
         return R * c;
+    }
+
+    private double calculateAFL(double distance) {
+        // Assuming AFL is calculated based on the distance (you can modify this as needed)
+        return distance / 40;
     }
 
     private boolean checkLocationPermission() {
@@ -129,7 +136,10 @@ public class MainActivity extends AppCompatActivity {
     private void calculateAndDisplayDistance() {
         if (lat1 != 0 && lon1 != 0 && lat2 != 0 && lon2 != 0) {
             double distance = calculateDistance(lat1, lon1, lat2, lon2);
+            double afl = calculateAFL(distance);
+
             distanceTextView.setText("Distance: " + distance + " km");
+            aflTextView.setText("AFL: " + afl + " km");
         }
     }
 

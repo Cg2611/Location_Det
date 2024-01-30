@@ -61,4 +61,12 @@
         android:text="Distance: "
         android:layout_below="@id/getLocationButton2"
         android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/aflTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AFL: "
+        android:layout_below="@id/distanceTextView"
+        android:layout_marginTop="16dp"/>
 </RelativeLayout>
